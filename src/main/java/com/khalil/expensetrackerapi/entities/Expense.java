@@ -3,6 +3,7 @@ package com.khalil.expensetrackerapi.entities;
 import com.khalil.expensetrackerapi.enums.CategoriesExpenseEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 @Table(name = "expenses")
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
 public class Expense {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
