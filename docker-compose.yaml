@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: postgres:18.4-alpine3.24
+    container_name: expense_tracker_db
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: expense_tracker
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - expense_tracker_data:/var/lib/postgresql
+
+volumes:
+  expense_tracker_data:
