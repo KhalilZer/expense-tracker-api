@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,10 +19,10 @@ import java.util.List;
 @Setter
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "full_name" , nullable = false)
+    @Column(name = "full_name", nullable = false)
     private String fullName;
 
     @Column(nullable = false, unique = true)
@@ -34,8 +35,10 @@ public class User {
     @Column(nullable = false)
     private RoleEnum role;
 
-   @OneToMany(mappedBy = "user",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-   private List<Expense> expenseList;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Expense> expenseList;
 
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
     private LocalDate timestamps;
 }

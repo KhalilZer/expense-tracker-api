@@ -26,6 +26,7 @@ public class ExpenseController {
             @Valid @RequestBody CreateExpenseRequest request
     ) {
 
+
         return GlobalResponse.success(
                 expenseService.createExpense(request),
                 "Expense created successfully",
@@ -59,7 +60,7 @@ public class ExpenseController {
             @Valid @RequestBody UpdateExpenseRequest request
     ) {
         return GlobalResponse.success(
-                expenseService.updateExpense(id,request),
+                expenseService.updateExpense(id, request),
                 "Expense updated successfully",
                 HttpStatus.OK
         );

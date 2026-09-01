@@ -21,12 +21,12 @@ public class ExpenseServiceImpl implements ExpenseContract {
 
     private final ExpenseMapper expenseMapper;
     private final ExpenseRepo expenseRepo;
-    private  final UserRepo userRepo;
+    private final UserRepo userRepo;
 
 
     @Override
     public Expense createExpense(CreateExpenseRequest expenseRequest) {
-        Expense expense=expenseMapper.toEntity(expenseRequest);
+        Expense expense = expenseMapper.toEntity(expenseRequest);
         expenseRepo.save(expense);
         return expense;
     }
@@ -38,24 +38,24 @@ public class ExpenseServiceImpl implements ExpenseContract {
 
     @Override
     public Expense getOneExpense(Long id) {
-       return expenseRepo.findById(id)
-               .orElseThrow(()->new ResourceNotFound("Expense not Found"));
+        return expenseRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFound("Expense not Found"));
 
     }
 
     @Override
     public Expense updateExpense(Long expenseId, UpdateExpenseRequest expenseRequest) {
-        Expense expense=expenseRepo.findById(expenseId)
-                .orElseThrow(()->new ResourceNotFound("Expense not Found"));
-        expenseMapper.updateEntity(expenseRequest,expense);
+        Expense expense = expenseRepo.findById(expenseId)
+                .orElseThrow(() -> new ResourceNotFound("Expense not Found"));
+        expenseMapper.updateEntity(expenseRequest, expense);
         return expenseRepo.save(expense);
 
     }
 
     @Override
     public void deleteExpense(Long id) {
-        Expense expense=expenseRepo.findById(id)
-                .orElseThrow(()->new ResourceNotFound("Expense not Found"));
+        Expense expense = expenseRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFound("Expense not Found"));
 
         expenseRepo.delete(expense);
 
@@ -63,15 +63,15 @@ public class ExpenseServiceImpl implements ExpenseContract {
 
     @Override
     public SummaryExpenseResponse summaryByUser(Long userId) {
-        User user=userRepo.findById(userId)
-                .orElseThrow(()-> new ResourceNotFound("User with"+ userId+" not found"));
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new ResourceNotFound("User with ID: " + userId + " not found"));
 
-        List<Expense> expensesByUser=user.getExpenseList();
+        List<Expense> expensesByUser = user.getExpenseList();
 
-        double totalExpenses=expensesByUser.stream()
-                .map(Expense::getAmount).reduce(0.0,Double::sum);
+        double totalExpenses = expensesByUser.stream()
+                .map(Expense::getAmount).reduce(0.0, Double::sum);
 
-        int countExpenses=expensesByUser.size();
-        return new SummaryExpenseResponse(countExpenses,totalExpenses);
+        int countExpenses = expensesByUser.size();
+        return new SummaryExpenseResponse(countExpenses, totalExpenses);
     }
 }
