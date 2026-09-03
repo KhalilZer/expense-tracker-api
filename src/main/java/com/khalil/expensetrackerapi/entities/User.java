@@ -33,7 +33,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private RoleEnum role;
+    private RoleEnum role = RoleEnum.USER;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Expense> expenseList;

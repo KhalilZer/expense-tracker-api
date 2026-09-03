@@ -1,6 +1,7 @@
 package com.khalil.expensetrackerapi.controllers;
 
 import com.khalil.expensetrackerapi.dtos.expense.CreateExpenseRequest;
+import com.khalil.expensetrackerapi.dtos.expense.ExpenseResponse;
 import com.khalil.expensetrackerapi.dtos.expense.SummaryExpenseResponse;
 import com.khalil.expensetrackerapi.dtos.expense.UpdateExpenseRequest;
 import com.khalil.expensetrackerapi.entities.Expense;
@@ -22,7 +23,7 @@ public class ExpenseController {
     private final ExpenseServiceImpl expenseService;
 
     @PostMapping
-    public ResponseEntity<GlobalResponse<Expense>> createExpense(
+    public ResponseEntity<GlobalResponse<ExpenseResponse>> createExpense(
             @Valid @RequestBody CreateExpenseRequest request
     ) {
 
@@ -35,7 +36,7 @@ public class ExpenseController {
     }
 
     @GetMapping
-    public ResponseEntity<GlobalResponse<List<Expense>>> getAllExpenses() {
+    public ResponseEntity<GlobalResponse<List<ExpenseResponse>>> getAllExpenses() {
         return GlobalResponse.success(
                 expenseService.getAllExpenses(),
                 "Expenses retrieved successfully",
@@ -44,7 +45,7 @@ public class ExpenseController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GlobalResponse<Expense>> getOneExpense(
+    public ResponseEntity<GlobalResponse<ExpenseResponse>> getOneExpense(
             @PathVariable Long id
     ) {
         return GlobalResponse.success(
@@ -55,7 +56,7 @@ public class ExpenseController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<GlobalResponse<Expense>> updateExpense(
+    public ResponseEntity<GlobalResponse<ExpenseResponse>> updateExpense(
             @PathVariable Long id,
             @Valid @RequestBody UpdateExpenseRequest request
     ) {

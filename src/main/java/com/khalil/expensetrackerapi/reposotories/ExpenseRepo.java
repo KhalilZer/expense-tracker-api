@@ -4,5 +4,8 @@ import com.khalil.expensetrackerapi.entities.Expense;
 import com.khalil.expensetrackerapi.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ExpenseRepo extends JpaRepository<Expense,Long> {
+import java.util.List;
+
+public interface ExpenseRepo extends JpaRepository<Expense, Long> {
+    List<Expense> findAllByUserId(Long userId);
 }

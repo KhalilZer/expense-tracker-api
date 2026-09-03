@@ -2,6 +2,7 @@ package com.khalil.expensetrackerapi.services;
 
 import com.khalil.expensetrackerapi.abstracts.ExpenseContract;
 import com.khalil.expensetrackerapi.dtos.expense.CreateExpenseRequest;
+import com.khalil.expensetrackerapi.dtos.expense.ExpenseResponse;
 import com.khalil.expensetrackerapi.dtos.expense.SummaryExpenseResponse;
 import com.khalil.expensetrackerapi.dtos.expense.UpdateExpenseRequest;
 import com.khalil.expensetrackerapi.entities.Expense;
@@ -10,7 +11,12 @@ import com.khalil.expensetrackerapi.exceptions.ResourceNotFound;
 import com.khalil.expensetrackerapi.mappers.ExpenseMapper;
 import com.khalil.expensetrackerapi.reposotories.ExpenseRepo;
 import com.khalil.expensetrackerapi.reposotories.UserRepo;
+import com.khalil.expensetrackerapi.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,30 +31,55 @@ public class ExpenseServiceImpl implements ExpenseContract {
 
 
     @Override
-    public Expense createExpense(CreateExpenseRequest expenseRequest) {
+    public ExpenseResponse createExpense(CreateExpenseRequest expenseRequest) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        assert authentication != null;
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+        assert userDetails != null;
+        String email = userDetails.getUsername();
+
+        User user = userRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+
         Expense expense = expenseMapper.toEntity(expenseRequest);
+        expense.setUser(user);
         expenseRepo.save(expense);
-        return expense;
+        return expenseMapper.toResponse(expense);
     }
 
     @Override
-    public List<Expense> getAllExpenses() {
-        return expenseRepo.findAll();
+    public List<ExpenseResponse> getAllExpenses() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        assert authentication != null;
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+        assert userDetails != null;
+        return expenseRepo.findAllByUserId(userDetails.getId())
+                .stream()
+                .map((expense) -> expenseMapper.toResponse(expense))
+                .toList();
     }
 
     @Override
-    public Expense getOneExpense(Long id) {
-        return expenseRepo.findById(id)
+    public ExpenseResponse getOneExpense(Long id) {
+        Expense expense = expenseRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFound("Expense not Found"));
 
+        return expenseMapper.toResponse(expense);
+
+
     }
 
     @Override
-    public Expense updateExpense(Long expenseId, UpdateExpenseRequest expenseRequest) {
+    public ExpenseResponse updateExpense(Long expenseId, UpdateExpenseRequest expenseRequest) {
         Expense expense = expenseRepo.findById(expenseId)
                 .orElseThrow(() -> new ResourceNotFound("Expense not Found"));
+
         expenseMapper.updateEntity(expenseRequest, expense);
-        return expenseRepo.save(expense);
+
+
+        return expenseMapper.toResponse(expenseRepo.save(expense));
 
     }
 
