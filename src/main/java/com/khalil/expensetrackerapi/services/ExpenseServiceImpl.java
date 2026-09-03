@@ -13,6 +13,7 @@ import com.khalil.expensetrackerapi.reposotories.ExpenseRepo;
 import com.khalil.expensetrackerapi.reposotories.UserRepo;
 import com.khalil.expensetrackerapi.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -62,8 +63,10 @@ public class ExpenseServiceImpl implements ExpenseContract {
     }
 
     @Override
-    public ExpenseResponse getOneExpense(Long id) {
-        Expense expense = expenseRepo.findById(id)
+    @PreAuthorize("hasRole('ADMIN') or @expenseSecurity.isOwner(#expenseId,principal)")
+
+    public ExpenseResponse getOneExpense(Long expenseId) {
+        Expense expense = expenseRepo.findById(expenseId)
                 .orElseThrow(() -> new ResourceNotFound("Expense not Found"));
 
         return expenseMapper.toResponse(expense);
@@ -72,6 +75,8 @@ public class ExpenseServiceImpl implements ExpenseContract {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN') or @expenseSecurity.isOwner(#expenseId,principal)")
+
     public ExpenseResponse updateExpense(Long expenseId, UpdateExpenseRequest expenseRequest) {
         Expense expense = expenseRepo.findById(expenseId)
                 .orElseThrow(() -> new ResourceNotFound("Expense not Found"));
@@ -84,8 +89,9 @@ public class ExpenseServiceImpl implements ExpenseContract {
     }
 
     @Override
-    public void deleteExpense(Long id) {
-        Expense expense = expenseRepo.findById(id)
+    @PreAuthorize("hasRole('ADMIN') or @expenseSecurity.isOwner(#expenseId,principal)")
+    public void deleteExpense(Long expenseId) {
+        Expense expense = expenseRepo.findById(expenseId)
                 .orElseThrow(() -> new ResourceNotFound("Expense not Found"));
 
         expenseRepo.delete(expense);
